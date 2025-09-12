@@ -15,6 +15,7 @@ pygame.display.set_icon(icon)
     
 #playing alarm for testing
 watch=pygame.image.load('clock_bg.png')
+clock=pygame.time.Clock()
 clx=200
 cly=105
 def draw(x, y):
@@ -35,4 +36,4 @@ while running:
             running=False
 
     draw(clx,cly)  
-    pygame.display.update()
+    pygame.display.update() 
