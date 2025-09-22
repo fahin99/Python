@@ -1,0 +1,13 @@
+{
+  "Abraz": {
+    "password": "de66ba13890479f7fb9b1a5f56a834adbfb62109fdc32c0630de0fdf5fab7e7c",
+    "created_date": "2025-09-22 15:20:50",
+    "high_scores": {
+      "best_streak": 2,
+      "total_wins": 3,
+      "total_games": 10,
+      "win_percentage": 30.0,
+      "last_updated": "2025-09-22 15:21:20"
+    }
+  }
+}
