@@ -16,9 +16,9 @@ PYQT_VERSION = 6
 try:
     from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 
                                 QLabel, QPushButton, QLineEdit, QStackedWidget, QMessageBox,
-                                QGraphicsOpacityEffect)
+                                QGraphicsOpacityEffect, QShortcut)
     from PyQt6.QtCore import Qt, QTimer, QPropertyAnimation, QEasingCurve
-    from PyQt6.QtGui import QIcon, QFont, QPixmap
+    from PyQt6.QtGui import QIcon, QFont, QPixmap, QKeySequence
 except ImportError:
     try:
         from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
@@ -426,7 +426,7 @@ class WelcomeScreen(QWidget):
 
 
 class EnhancedLoginScreen(QWidget):
-    """Enhanced login screen with glassmorphism styling"""
+    """Clean and simple login screen"""
     def __init__(self, user_manager, main_window):
         super().__init__()
         self.user_manager = user_manager
@@ -434,110 +434,94 @@ class EnhancedLoginScreen(QWidget):
         self.setup_ui()
         
     def setup_ui(self):
-        layout = QVBoxLayout(self)
-        layout.setSpacing(0)
-        layout.setContentsMargins(20, 20, 20, 20)
-        layout.setAlignment(Qt.AlignmentFlag.AlignCenter if PYQT_VERSION == 6 else Qt.AlignCenter)
+        # Main layout with proper spacing
+        main_layout = QVBoxLayout(self)
+        main_layout.setContentsMargins(30, 20, 30, 20)  # Reduced fixed margins
+        main_layout.setSpacing(15)  # Reduced spacing for better scaling
         
-        # Main glassmorphism container - make it responsive
-        glass_container = QWidget()
-        glass_container.setMinimumSize(350, 400)
-        glass_container.setMaximumSize(450, 500)
-        glass_layout = QVBoxLayout(glass_container)
-        glass_layout.setSpacing(15)
-        glass_layout.setContentsMargins(25, 20, 25, 20)
-        
-        # Theme toggle button - positioned at top right
+        # Theme toggle button at top
         theme_layout = QHBoxLayout()
         theme_layout.addStretch()
         self.theme_btn = QPushButton("🌙 Dark")
         self.theme_btn.clicked.connect(self.toggle_theme)
-        self.theme_btn.setFixedSize(65, 26)
+        self.theme_btn.setFixedSize(80, 30)
         theme_layout.addWidget(self.theme_btn)
-        glass_layout.addLayout(theme_layout)
+        main_layout.addLayout(theme_layout)
         
-        # Header section
-        header_widget = QWidget()
-        header_layout = QVBoxLayout(header_widget)
-        header_layout.setSpacing(3)
-        header_layout.setContentsMargins(0, 0, 0, 0)
-        
+        # Title section
         title = QLabel("Welcome Back")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter if PYQT_VERSION == 6 else Qt.AlignCenter)
-        header_layout.addWidget(title)
+        main_layout.addWidget(title)
         
         subtitle = QLabel("Sign in to your account")
         subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter if PYQT_VERSION == 6 else Qt.AlignCenter)
-        header_layout.addWidget(subtitle)
+        main_layout.addWidget(subtitle)
         
-        glass_layout.addWidget(header_widget)
+        main_layout.addSpacing(20)
         
-        # Add some spacing after header
-        glass_layout.addSpacing(10)
+        # Form container with clean layout
+        form_container = QWidget()
+        form_container.setMinimumWidth(250)  # Set minimum width
+        form_container.setMaximumWidth(450)  # Increased maximum width
+        form_layout = QVBoxLayout(form_container)
+        form_layout.setSpacing(15)
         
-        # Form section
-        form_widget = QWidget()
-        form_layout = QVBoxLayout(form_widget)
-        form_layout.setSpacing(12)
-        form_layout.setContentsMargins(0, 0, 0, 0)
-        
-        # Username input
-        username_label = QLabel("Username")
+        # Username field
+        username_label = QLabel("Username:")
         form_layout.addWidget(username_label)
         
         self.username_input = QLineEdit()
         self.username_input.setPlaceholderText("Enter your username")
-        self.username_input.setFixedHeight(40)
+        self.username_input.setMinimumHeight(35)  # Changed to minimum height
         form_layout.addWidget(self.username_input)
         
-        # Add small spacing between fields
-        form_layout.addSpacing(5)
-        
-        # Password input
-        password_label = QLabel("Password")
+        # Password field
+        password_label = QLabel("Password:")
         form_layout.addWidget(password_label)
         
         self.password_input = QLineEdit()
         self.password_input.setPlaceholderText("Enter your password")
         self.password_input.setEchoMode(QLineEdit.EchoMode.Password if PYQT_VERSION == 6 else QLineEdit.Password)
-        self.password_input.setFixedHeight(40)
+        self.password_input.setMinimumHeight(35)  # Changed to minimum height
         form_layout.addWidget(self.password_input)
         
-        glass_layout.addWidget(form_widget)
+        # Center the form container
+        form_center_layout = QHBoxLayout()
+        form_center_layout.addStretch()
+        form_center_layout.addWidget(form_container)
+        form_center_layout.addStretch()
+        main_layout.addLayout(form_center_layout)
         
-        # Add spacing before buttons
-        glass_layout.addSpacing(15)
+        main_layout.addSpacing(20)
         
-        # Buttons section
+        # Buttons
         button_layout = QHBoxLayout()
-        button_layout.setSpacing(8)
         
         back_btn = QPushButton("← Back")
         back_btn.clicked.connect(self.main_window.show_welcome)
         back_btn.setFixedHeight(40)
+        back_btn.setFixedWidth(100)
         button_layout.addWidget(back_btn)
+        
+        button_layout.addStretch()
         
         login_btn = QPushButton("Sign In")
         login_btn.clicked.connect(self.login_clicked)
-        login_btn.setFixedHeight(40)
+        login_btn.setMinimumHeight(35)  # Changed to minimum height
+        login_btn.setMinimumWidth(100)  # Changed to minimum width
         button_layout.addWidget(login_btn)
         
-        glass_layout.addLayout(button_layout)
+        main_layout.addLayout(button_layout)
         
-        # Status label
+        # Status message
         self.status_label = QLabel("")
         self.status_label.setAlignment(Qt.AlignmentFlag.AlignCenter if PYQT_VERSION == 6 else Qt.AlignCenter)
-        self.status_label.setFixedHeight(20)
         self.status_label.setWordWrap(True)
-        glass_layout.addWidget(self.status_label)
+        main_layout.addWidget(self.status_label)
         
-        # Add stretch to push everything up
-        glass_layout.addStretch()
+        main_layout.addStretch()
         
-        layout.addWidget(glass_container)
-        
-        # Store references for theme updates
-        self.glass_container = glass_container
+        # Store references
         self.title = title
         self.subtitle = subtitle
         self.username_label = username_label
@@ -558,146 +542,114 @@ class EnhancedLoginScreen(QWidget):
     def apply_theme(self):
         colors = self.main_window.theme_manager.get_theme_colors()
         
-        # Background gradient and glass styling based on theme
-        if self.main_window.theme_manager.is_dark_mode:
-            bg_gradient = "qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #1e293b, stop:1 #334155)"
-            glass_bg = "rgba(45, 55, 72, 0.85)"
-            glass_border = "rgba(45, 55, 72, 0.9)"  # Almost invisible border
-            text_color = "white"
-            label_color = "rgba(255, 255, 255, 0.95)"
-            input_bg = "rgba(55, 65, 81, 0.8)"
-            input_border = "rgba(75, 85, 99, 0.6)"
-            placeholder_color = "rgba(255, 255, 255, 0.5)"
-        else:
-            bg_gradient = "qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #667eea, stop:1 #764ba2)"
-            glass_bg = "rgba(255, 255, 255, 0.3)"
-            glass_border = "rgba(255, 255, 255, 0.5)"
-            text_color = "#1f2937"
-            label_color = "#1f2937"
-            input_bg = "rgba(255, 255, 255, 0.85)"
-            input_border = "rgba(255, 255, 255, 0.7)"
-            placeholder_color = "rgba(31, 41, 55, 0.6)"
-            
-        self.setStyleSheet(f"background: {bg_gradient};")
+        # Clean background
+        self.setStyleSheet(f"background-color: {colors['bg_secondary']};")
         
-        # Theme toggle button
+        # Theme button
         self.theme_btn.setText("☀️ Light" if self.main_window.theme_manager.is_dark_mode else "🌙 Dark")
         self.theme_btn.setStyleSheet(f"""
             QPushButton {{
-                background: {glass_bg};
-                color: {text_color};
-                border: 1px solid {glass_border};
-                border-radius: 13px;
-                font-size: 9px;
+                background-color: {colors['gray']};
+                color: white;
+                border: none;
+                border-radius: 6px;
+                font-size: 11px;
                 font-weight: bold;
+                padding: 5px;
             }}
-            QPushButton:hover {{
-                background: rgba(255, 255, 255, 0.4);
-                color: #1f2937;
-            }}
-        """)
-        
-        # Glassmorphism container - remove visible borders in dark mode
-        border_style = f"1px solid {glass_border}" if not self.main_window.theme_manager.is_dark_mode else "none"
-        self.glass_container.setStyleSheet(f"""
-            QWidget {{
-                background: {glass_bg};
-                border: {border_style};
-                border-radius: 18px;
+            QPushButton:hover {{ 
+                background-color: {colors['gray_hover']}; 
             }}
         """)
         
-        # Header styles - better spacing
+        # Title styling
         self.title.setStyleSheet(f"""
-            font-size: 22px; 
+            font-size: 28px; 
             font-weight: bold; 
-            color: {text_color};
-            margin: 0px;
-            padding: 0px;
+            color: {colors['text_primary']};
+            margin: 10px 0px;
         """)
         
         self.subtitle.setStyleSheet(f"""
-            font-size: 13px; 
-            color: {label_color};
-            font-weight: 400;
-            margin: 0px;
-            padding: 0px;
+            font-size: 16px; 
+            color: {colors['text_muted']};
+            margin: 5px 0px;
         """)
         
-        # Label styles - consistent sizing
+        # Label styling
         label_style = f"""
-            color: {label_color};
-            font-size: 12px;
-            font-weight: 600;
-            margin: 0px 0px 3px 0px;
-            padding: 0px;
+            color: {colors['text_secondary']};
+            font-size: 14px;
+            font-weight: bold;
+            margin: 5px 0px;
         """
         self.username_label.setStyleSheet(label_style)
         self.password_label.setStyleSheet(label_style)
         
-        # Input styles with better contrast and consistent sizing
+        # Input styling - make sure they are clearly visible
         input_style = f"""
             QLineEdit {{
-                background: {input_bg};
-                border: 1px solid {input_border};
+                background-color: {colors['bg_primary']};
+                border: 2px solid {colors['border']};
                 border-radius: 8px;
-                padding: 10px 12px;
-                color: {text_color};
-                font-size: 13px;
-                font-weight: 400;
+                padding: 10px;
+                color: {colors['text_primary']};
+                font-size: 14px;
+                selection-background-color: {colors['blue']};
             }}
             QLineEdit:focus {{
-                border: 2px solid #06b6d4;
-                background: {"rgba(255, 255, 255, 0.95)" if not self.main_window.theme_manager.is_dark_mode else "rgba(75, 85, 99, 0.9)"};
+                border: 2px solid {colors['blue']};
             }}
             QLineEdit::placeholder {{
-                color: {placeholder_color};
+                color: {colors['text_muted']};
             }}
         """
         self.username_input.setStyleSheet(input_style)
         self.password_input.setStyleSheet(input_style)
         
-        # Button styles - consistent sizing
+        # Button styling
         self.back_btn.setStyleSheet(f"""
             QPushButton {{
-                background: {glass_bg};
-                border: 1px solid {glass_border};
-                border-radius: 8px;
-                color: {text_color};
-                font-size: 13px;
-                font-weight: 600;
-                padding: 8px 12px;
-            }}
-            QPushButton:hover {{
-                background: rgba(255, 255, 255, 0.4);
-                color: #1f2937;
-            }}
-            QPushButton:pressed {{
-                background: rgba(255, 255, 255, 0.3);
-            }}
-        """)
-        
-        self.login_btn.setStyleSheet("""
-            QPushButton {
-                background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #6366f1, stop:1 #06b6d4);
+                background-color: {colors['gray']};
+                color: white;
                 border: none;
                 border-radius: 8px;
-                color: white;
-                font-size: 13px;
-                font-weight: 600;
-                padding: 8px 12px;
-            }
-            QPushButton:hover {
-                background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #5855eb, stop:1 #0891b2);
-            }
-            QPushButton:pressed {
-                background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #4f46e5, stop:1 #0284c7);
-            }
+                font-size: 14px;
+                font-weight: bold;
+                padding: 8px;
+            }}
+            QPushButton:hover {{ 
+                background-color: {colors['gray_hover']}; 
+            }}
+            QPushButton:pressed {{ 
+                background-color: {colors['gray']}; 
+            }}
         """)
         
+        self.login_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {colors['blue']};
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-size: 14px;
+                font-weight: bold;
+                padding: 8px;
+            }}
+            QPushButton:hover {{ 
+                background-color: {colors['blue_hover']}; 
+            }}
+            QPushButton:pressed {{ 
+                background-color: {colors['blue']}; 
+            }}
+        """)
+
     def login_clicked(self):
         username = self.username_input.text().strip()
         password = self.password_input.text()
+        
+        # Clear any previous messages
+        self.status_label.clear()
         
         if not username or not password:
             self.show_message("Please enter both username and password", "error")
@@ -705,37 +657,41 @@ class EnhancedLoginScreen(QWidget):
             
         if self.user_manager.login(username, password):
             self.show_message(f"Welcome back, {username}! 🎉", "success")
-            QTimer.singleShot(1000, self.main_window.show_game)
+            QTimer.singleShot(1500, self.main_window.show_game)
         else:
             self.show_message("Invalid username or password", "error")
     
     def show_message(self, message, message_type):
+        colors = self.main_window.theme_manager.get_theme_colors()
+        
         if message_type == "success":
-            color = "#22c55e"
-            bg_color = "rgba(34, 197, 94, 0.2)"
+            color = colors['green']
+            bg_color = f"{colors['green']}20"
         else:
-            color = "#ef4444"
-            bg_color = "rgba(239, 68, 68, 0.2)"
+            color = colors['red']
+            bg_color = f"{colors['red']}20"
             
         self.status_label.setText(message)
         self.status_label.setStyleSheet(f"""
             color: {color}; 
             font-weight: bold; 
             font-size: 12px;
-            background: {bg_color};
+            background-color: {bg_color};
             padding: 8px 12px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            border: 1px solid {color};
+            margin: 5px;
         """)
     
     def clear_form(self):
         self.username_input.clear()
         self.password_input.clear()
         self.status_label.clear()
+        self.username_input.setFocus()
 
 
 class EnhancedRegisterScreen(QWidget):
-    """Enhanced register screen with glassmorphism styling"""
+    """Clean and simple register screen"""
     def __init__(self, user_manager, main_window):
         super().__init__()
         self.user_manager = user_manager
@@ -743,119 +699,104 @@ class EnhancedRegisterScreen(QWidget):
         self.setup_ui()
         
     def setup_ui(self):
-        layout = QVBoxLayout(self)
-        layout.setSpacing(0)
-        layout.setContentsMargins(20, 20, 20, 20)
-        layout.setAlignment(Qt.AlignmentFlag.AlignCenter if PYQT_VERSION == 6 else Qt.AlignCenter)
+        # Main layout with proper spacing
+        main_layout = QVBoxLayout(self)
+        main_layout.setContentsMargins(30, 20, 30, 20)  # Reduced margins for better scaling
+        main_layout.setSpacing(15)
         
-        # Main glassmorphism container
-        glass_container = QWidget()
-        glass_container.setFixedSize(380, 520)
-        glass_layout = QVBoxLayout(glass_container)
-        glass_layout.setSpacing(20)
-        glass_layout.setContentsMargins(30, 25, 30, 25)
-        
-        # Theme toggle button
+        # Theme toggle button at top
         theme_layout = QHBoxLayout()
         theme_layout.addStretch()
         self.theme_btn = QPushButton("🌙 Dark")
         self.theme_btn.clicked.connect(self.toggle_theme)
-        self.theme_btn.setFixedSize(70, 28)
+        self.theme_btn.setFixedSize(80, 30)
         theme_layout.addWidget(self.theme_btn)
-        glass_layout.addLayout(theme_layout)
+        main_layout.addLayout(theme_layout)
         
-        # Header section
-        header_widget = QWidget()
-        header_layout = QVBoxLayout(header_widget)
-        header_layout.setSpacing(5)
-        header_layout.setContentsMargins(0, 0, 0, 0)
-        
+        # Title section
         title = QLabel("Create Account")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter if PYQT_VERSION == 6 else Qt.AlignCenter)
-        header_layout.addWidget(title)
+        main_layout.addWidget(title)
         
         subtitle = QLabel("Join the ultimate gaming experience")
         subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter if PYQT_VERSION == 6 else Qt.AlignCenter)
-        header_layout.addWidget(subtitle)
+        main_layout.addWidget(subtitle)
         
-        glass_layout.addWidget(header_widget)
+        main_layout.addSpacing(15)
         
-        # Add some spacing after header
-        glass_layout.addSpacing(10)
+        # Form container with clean layout
+        form_container = QWidget()
+        form_container.setMinimumWidth(250)  # Set minimum width
+        form_container.setMaximumWidth(450)  # Increased maximum width
+        form_layout = QVBoxLayout(form_container)
+        form_layout.setSpacing(12)
         
-        # Form section
-        form_widget = QWidget()
-        form_layout = QVBoxLayout(form_widget)
-        form_layout.setSpacing(15)
-        form_layout.setContentsMargins(0, 5, 0, 5)
-        
-        # Username input
-        username_label = QLabel("Username")
+        # Username field
+        username_label = QLabel("Username:")
         form_layout.addWidget(username_label)
         
         self.username_input = QLineEdit()
         self.username_input.setPlaceholderText("Choose a username")
-        self.username_input.setFixedHeight(40)
+        self.username_input.setFixedHeight(35)
         form_layout.addWidget(self.username_input)
         
-        # Add small spacing between fields
-        form_layout.addSpacing(5)
-        
-        # Password input
-        password_label = QLabel("Password")
+        # Password field
+        password_label = QLabel("Password:")
         form_layout.addWidget(password_label)
         
         self.password_input = QLineEdit()
         self.password_input.setPlaceholderText("Create a password")
         self.password_input.setEchoMode(QLineEdit.EchoMode.Password if PYQT_VERSION == 6 else QLineEdit.Password)
-        self.password_input.setFixedHeight(40)
+        self.password_input.setFixedHeight(35)
         form_layout.addWidget(self.password_input)
         
-        # Add small spacing between fields
-        form_layout.addSpacing(5)
-        
-        # Confirm Password input
-        confirm_label = QLabel("Confirm Password")
+        # Confirm Password field
+        confirm_label = QLabel("Confirm Password:")
         form_layout.addWidget(confirm_label)
         
         self.confirm_password_input = QLineEdit()
         self.confirm_password_input.setPlaceholderText("Confirm your password")
         self.confirm_password_input.setEchoMode(QLineEdit.EchoMode.Password if PYQT_VERSION == 6 else QLineEdit.Password)
-        self.confirm_password_input.setFixedHeight(40)
+        self.confirm_password_input.setFixedHeight(35)
         form_layout.addWidget(self.confirm_password_input)
         
-        glass_layout.addWidget(form_widget)
+        # Center the form container
+        form_center_layout = QHBoxLayout()
+        form_center_layout.addStretch()
+        form_center_layout.addWidget(form_container)
+        form_center_layout.addStretch()
+        main_layout.addLayout(form_center_layout)
         
-        # Add spacing before buttons
-        glass_layout.addSpacing(15)
+        main_layout.addSpacing(15)
         
-        # Buttons section
+        # Buttons
         button_layout = QHBoxLayout()
-        button_layout.setSpacing(10)
         
         back_btn = QPushButton("← Back")
         back_btn.clicked.connect(self.main_window.show_welcome)
-        back_btn.setFixedHeight(45)
+        back_btn.setMinimumHeight(35)  # Changed to minimum height
+        back_btn.setMinimumWidth(100)  # Changed to minimum width
         button_layout.addWidget(back_btn)
+        
+        button_layout.addStretch()
         
         register_btn = QPushButton("Create Account")
         register_btn.clicked.connect(self.register_clicked)
-        register_btn.setFixedHeight(45)
+        register_btn.setMinimumHeight(35)  # Changed to minimum height
+        register_btn.setMinimumWidth(130)  # Changed to minimum width
         button_layout.addWidget(register_btn)
         
-        glass_layout.addLayout(button_layout)
+        main_layout.addLayout(button_layout)
         
-        # Status label
+        # Status message
         self.status_label = QLabel("")
         self.status_label.setAlignment(Qt.AlignmentFlag.AlignCenter if PYQT_VERSION == 6 else Qt.AlignCenter)
-        self.status_label.setFixedHeight(25)
-        form_layout.addWidget(self.status_label)
+        self.status_label.setWordWrap(True)
+        main_layout.addWidget(self.status_label)
         
-        glass_layout.addWidget(form_widget)
-        layout.addWidget(glass_container)
+        main_layout.addStretch()
         
-        # Store references for theme updates
-        self.glass_container = glass_container
+        # Store references
         self.title = title
         self.subtitle = subtitle
         self.username_label = username_label
@@ -878,145 +819,99 @@ class EnhancedRegisterScreen(QWidget):
     def apply_theme(self):
         colors = self.main_window.theme_manager.get_theme_colors()
         
-        # Background gradient and glass styling based on theme
-        if self.main_window.theme_manager.is_dark_mode:
-            bg_gradient = "qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #1e293b, stop:1 #334155)"
-            glass_bg = "rgba(45, 55, 72, 0.85)"
-            glass_border = "rgba(45, 55, 72, 0.9)"  # Almost invisible border
-            text_color = "white"
-            label_color = "rgba(255, 255, 255, 0.95)"
-            input_bg = "rgba(55, 65, 81, 0.8)"
-            input_border = "rgba(75, 85, 99, 0.6)"
-            placeholder_color = "rgba(255, 255, 255, 0.5)"
-        else:
-            bg_gradient = "qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #667eea, stop:1 #764ba2)"
-            glass_bg = "rgba(255, 255, 255, 0.3)"
-            glass_border = "rgba(255, 255, 255, 0.5)"
-            text_color = "#1f2937"
-            label_color = "#1f2937"
-            input_bg = "rgba(255, 255, 255, 0.85)"
-            input_border = "rgba(255, 255, 255, 0.7)"
-            placeholder_color = "rgba(31, 41, 55, 0.6)"
-            
-        self.setStyleSheet(f"background: {bg_gradient};")
+        # Clean background
+        self.setStyleSheet(f"background-color: {colors['bg_secondary']};")
         
-        # Theme toggle button
+        # Theme button
         self.theme_btn.setText("☀️ Light" if self.main_window.theme_manager.is_dark_mode else "🌙 Dark")
         self.theme_btn.setStyleSheet(f"""
             QPushButton {{
-                background: {glass_bg};
-                color: {text_color};
-                border: 1px solid {glass_border};
-                border-radius: 13px;
-                font-size: 9px;
+                background-color: {colors['gray']};
+                color: white;
+                border: none;
+                border-radius: 6px;
+                font-size: 11px;
                 font-weight: bold;
+                padding: 5px;
             }}
-            QPushButton:hover {{
-                background: rgba(255, 255, 255, 0.4);
-                color: #1f2937;
-            }}
-        """)
-        
-        # Glassmorphism container - remove visible borders in dark mode
-        border_style = f"1px solid {glass_border}" if not self.main_window.theme_manager.is_dark_mode else "none"
-        self.glass_container.setStyleSheet(f"""
-            QWidget {{
-                background: {glass_bg};
-                border: {border_style};
-                border-radius: 18px;
+            QPushButton:hover {{ 
+                background-color: {colors['gray_hover']}; 
             }}
         """)
         
-        # Header styles - better spacing
+        # Title styling
         self.title.setStyleSheet(f"""
-            font-size: 22px; 
+            font-size: 26px; 
             font-weight: bold; 
-            color: {text_color};
-            margin: 0px;
-            padding: 0px;
+            color: {colors['text_primary']};
+            margin: 10px 0px;
         """)
         
         self.subtitle.setStyleSheet(f"""
-            font-size: 13px; 
-            color: {label_color};
-            font-weight: 400;
-            margin: 0px;
-            padding: 0px;
+            font-size: 15px; 
+            color: {colors['text_muted']};
+            margin: 5px 0px;
         """)
         
-        # Label styles - consistent sizing
+        # Label styling
         label_style = f"""
-            color: {label_color};
-            font-size: 12px;
-            font-weight: 600;
-            margin: 0px 0px 3px 0px;
-            padding: 0px;
+            color: {colors['text_secondary']};
+            font-size: 13px;
+            font-weight: bold;
+            margin: 3px 0px;
         """
         self.username_label.setStyleSheet(label_style)
         self.password_label.setStyleSheet(label_style)
         self.confirm_label.setStyleSheet(label_style)
         
-        # Input styles with better contrast and consistent sizing
+        # Input styling
         input_style = f"""
             QLineEdit {{
-                background: {input_bg};
-                border: 1px solid {input_border};
-                border-radius: 8px;
-                padding: 10px 12px;
-                color: {text_color};
+                background-color: {colors['bg_primary']};
+                border: 2px solid {colors['border']};
+                border-radius: 6px;
+                padding: 8px;
+                color: {colors['text_primary']};
                 font-size: 13px;
-                font-weight: 400;
             }}
             QLineEdit:focus {{
-                border: 2px solid #06b6d4;
-                background: {"rgba(255, 255, 255, 0.95)" if not self.main_window.theme_manager.is_dark_mode else "rgba(75, 85, 99, 0.9)"};
+                border: 2px solid {colors['blue']};
             }}
             QLineEdit::placeholder {{
-                color: {placeholder_color};
+                color: {colors['text_muted']};
             }}
         """
         self.username_input.setStyleSheet(input_style)
         self.password_input.setStyleSheet(input_style)
         self.confirm_password_input.setStyleSheet(input_style)
         
-        # Button styles - consistent sizing
+        # Button styling
         self.back_btn.setStyleSheet(f"""
             QPushButton {{
-                background: {glass_bg};
-                border: 1px solid {glass_border};
-                border-radius: 8px;
-                color: {text_color};
-                font-size: 13px;
-                font-weight: 600;
-                padding: 8px 12px;
-            }}
-            QPushButton:hover {{
-                background: rgba(255, 255, 255, 0.4);
-                color: #1f2937;
-            }}
-            QPushButton:pressed {{
-                background: rgba(255, 255, 255, 0.3);
-            }}
-        """)
-        
-        self.register_btn.setStyleSheet("""
-            QPushButton {
-                background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #10b981, stop:1 #06b6d4);
-                border: none;
-                border-radius: 10px;
+                background-color: {colors['gray']};
                 color: white;
-                font-size: 14px;
-                font-weight: 600;
-                padding: 10px;
-            }
-            QPushButton:hover {
-                background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #059669, stop:1 #0891b2);
-            }
-            QPushButton:pressed {
-                background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #047857, stop:1 #0284c7);
-            }
+                border: none;
+                border-radius: 6px;
+                font-size: 13px;
+                font-weight: bold;
+            }}
+            QPushButton:hover {{ 
+                background-color: {colors['gray_hover']}; 
+            }}
         """)
         
+        self.register_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {colors['green']};
+                color: white;
+                border: none;
+                border-radius: 6px;
+                font-size: 13px;
+                font-weight: bold;
+            }}
+            QPushButton:hover {{ background-color: {colors['green_hover']}; }}
+        """)
+    
     def register_clicked(self):
         username = self.username_input.text().strip()
         password = self.password_input.text()
@@ -1048,19 +943,19 @@ class EnhancedRegisterScreen(QWidget):
     def show_message(self, message, message_type):
         if message_type == "success":
             color = "#22c55e"
-            bg_color = "rgba(34, 197, 94, 0.2)"
+            bg_color = "rgba(34, 197, 94, 0.15)"
         else:
             color = "#ef4444"
-            bg_color = "rgba(239, 68, 68, 0.2)"
+            bg_color = "rgba(239, 68, 68, 0.15)"
             
         self.status_label.setText(message)
         self.status_label.setStyleSheet(f"""
             color: {color}; 
             font-weight: bold; 
-            font-size: 12px;
+            font-size: 11px;
             background: {bg_color};
-            padding: 8px 12px;
-            border-radius: 8px;
+            padding: 6px 10px;
+            border-radius: 6px;
             border: 1px solid rgba(255, 255, 255, 0.2);
         """)
     
@@ -1483,17 +1378,22 @@ class EnhancedMainWindow(QMainWindow):
         
         # Set proper window size and make it resizable
         self.setGeometry(100, 100, 500, 400)
+        
+        # Add fullscreen shortcut
+        self.fullscreen_shortcut = QShortcut(QKeySequence("F11"), self)
+        self.fullscreen_shortcut.activated.connect(self.toggle_fullscreen)
         self.setMinimumSize(500, 400)
-        self.setMaximumSize(800, 600)
+        self.setMaximumSize(1200, 800)  # Increased max size for better scaling
         self.resize(500, 400)
         
-        # Ensure proper window flags for controls
+        # Ensure proper window flags for controls including fullscreen
         self.setWindowFlags(
             Qt.WindowType.Window | 
             Qt.WindowType.WindowTitleHint | 
             Qt.WindowType.WindowCloseButtonHint | 
             Qt.WindowType.WindowMinimizeButtonHint | 
-            Qt.WindowType.WindowMaximizeButtonHint
+            Qt.WindowType.WindowMaximizeButtonHint |
+            Qt.WindowType.WindowFullscreenButtonHint  # Add fullscreen button
             if PYQT_VERSION == 6 else
             Qt.Window | 
             Qt.WindowTitleHint | 
@@ -1501,6 +1401,9 @@ class EnhancedMainWindow(QMainWindow):
             Qt.WindowMinimizeButtonHint | 
             Qt.WindowMaximizeButtonHint
         )
+        
+        # State tracking
+        self.is_fullscreen = False
         
         # Theme manager
         self.theme_manager = ThemeManager()
@@ -1545,6 +1448,17 @@ class EnhancedMainWindow(QMainWindow):
         # Setup fade animations
         self.setup_fade_animation(self.splash_screen)
         
+        # Add fullscreen keyboard shortcut
+        if PYQT_VERSION == 6:
+            self.shortcut = QShortcut(QKeySequence("F11"), self)
+            self.shortcut.activated.connect(self.toggle_fullscreen)
+        else:
+            # PyQt5 needs to import QShortcut and QKeySequence first
+            from PyQt5.QtWidgets import QShortcut
+            from PyQt5.QtGui import QKeySequence
+            self.shortcut = QShortcut(QKeySequence("F11"), self)
+            self.shortcut.activated.connect(self.toggle_fullscreen)
+
         # Show splash for 2 seconds, then credit screen
         QTimer.singleShot(2000, self.show_credit_with_fade)
         
@@ -1610,8 +1524,23 @@ class EnhancedMainWindow(QMainWindow):
             print("❌ No user logged in, staying on welcome screen")
             self.show_welcome()
             
+    def toggle_fullscreen(self):
+        """Toggle fullscreen mode"""
+        if self.is_fullscreen:
+            self.showNormal()
+            self.is_fullscreen = False
+        else:
+            self.showFullScreen()
+            self.is_fullscreen = True
+    
+    def changeEvent(self, event):
+        """Handle window state changes"""
+        if event.type() == Qt.WindowStateChange:
+            self.is_fullscreen = self.windowState() & Qt.WindowFullScreen
+        super().changeEvent(event)
+        
     def show_stats(self):
-        print("📊 Switching to stats screen")
+        """Show dedicated stats screen"""
         self.stack.setCurrentIndex(6)
         self.stats_screen.update_stats()
 
