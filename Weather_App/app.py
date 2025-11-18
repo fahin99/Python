@@ -1,5 +1,58 @@
 import sys
-import requests
+try:
+    import requests
+except Exception:
+    # Minimal fallback using urllib so the code can run without the 'requests' package.
+    import urllib.request as _urllib_request
+    import urllib.error as _urllib_error
+    import json as _json
+
+    class _RequestsExceptions:
+        HTTPError = _urllib_error.HTTPError
+        ConnectionError = OSError
+        Timeout = TimeoutError
+        TooManyRedirects = _urllib_error.HTTPError
+        RequestException = Exception
+
+    class _RequestsFallback:
+        def get(self, url, timeout=None):
+            req = _urllib_request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+            try:
+                with _urllib_request.urlopen(req, timeout=timeout) as resp:
+                    class Resp:
+                        def __init__(self, code, content):
+                            self.status_code = code
+                            self._content = content
+
+                        def raise_for_status(self):
+                            if not (200 <= self.status_code < 300):
+                                raise _urllib_error.HTTPError(None, self.status_code, "HTTP Error", None, None)
+
+                        def json(self):
+                            return _json.loads(self._content.decode("utf-8"))
+
+                    return Resp(resp.status, resp.read())
+            except _urllib_error.HTTPError as e:
+                class RespErr:
+                    def __init__(self, code, exc):
+                        self.status_code = code
+                        self._exc = exc
+
+                    def raise_for_status(self):
+                        raise self._exc
+
+                    def json(self):
+                        try:
+                            # try to read JSON body from the HTTPError if available
+                            if hasattr(self._exc, 'read'):
+                                return _json.loads(self._exc.read().decode("utf-8"))
+                        except Exception:
+                            pass
+                        return {}
+                return RespErr(getattr(e, "code", 0), e)
+
+    requests = _RequestsFallback()
+    requests.exceptions = _RequestsExceptions()
 import os
 from PyQt5.QtWidgets import (QApplication, QWidget, QLabel,
                              QLineEdit, QPushButton, QVBoxLayout)
