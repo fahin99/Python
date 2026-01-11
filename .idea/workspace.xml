@@ -5,7 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="312b90f3-e417-48d1-9e6c-51350227ce81" name="Changes" comment="adding Qt5">
-      <change beforePath="$PROJECT_DIR$/Django/rotten" beforeDir="false" afterPath="$PROJECT_DIR$/Django/rotten" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Pandas/first.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,6 +53,7 @@
     "Python.app.executor": "Run",
     "Python.bank.executor": "Run",
     "Python.encrypting.executor": "Run",
+    "Python.first.executor": "Run",
     "Python.font.executor": "Run",
     "Python.gui.executor": "Run",
     "Python.learn.executor": "Run",
@@ -211,6 +213,7 @@
       <workItem from="1757709529504" duration="1864000" />
       <workItem from="1757857441743" duration="19000" />
       <workItem from="1763187019290" duration="36000" />
+      <workItem from="1768147969385" duration="4935000" />
     </task>
     <task id="LOCAL-00001" summary="none">
       <option name="closed" value="true" />
@@ -297,6 +300,7 @@
     <SUITE FILE_PATH="coverage/Python$learn.coverage" NAME="learn Coverage Results" MODIFIED="1756654806802" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Python$slot_machine.coverage" NAME="slot_machine Coverage Results" MODIFIED="1756896722798" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="D:\OneDrive\Documents\Python" />
     <SUITE FILE_PATH="coverage/Python$sc1.coverage" NAME="sc1 Coverage Results" MODIFIED="1757709735571" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/stopwatch_py$first.coverage" NAME="first Coverage Results" MODIFIED="1768157316565" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Pandas" />
     <SUITE FILE_PATH="coverage/Python$sc2.coverage" NAME="sc2 Coverage Results" MODIFIED="1756894413659" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/Python$gui.coverage" NAME="gui Coverage Results" MODIFIED="1757711178321" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/stopwatch_py$app.coverage" NAME="app Coverage Results" MODIFIED="1763187048744" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Weather_App" />
